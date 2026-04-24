@@ -1,7 +1,3 @@
-# FlakeGuard GitHub Actions Workflow
-# This will run FlakeGuard on every Pull Request
-# We will complete this in Phase 3 of the project
-
 name: FlakeGuard
 
 on:
@@ -11,6 +7,11 @@ on:
 jobs:
   flakeguard:
     runs-on: ubuntu-latest
+
+    permissions:
+      pull-requests: write
+      contents: read
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -24,4 +25,8 @@ jobs:
         run: pip install -r requirements.txt
 
       - name: Run FlakeGuard
-        run: echo "FlakeGuard will run here - coming soon!"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: python -m flakeguard.main
